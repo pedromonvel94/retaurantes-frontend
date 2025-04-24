@@ -6,11 +6,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent implements OnInit {
-  ngOnInit(): void {
-    throw new Error('Method not implemented.');
-  }
   isMenuOpen = false;
-  isDarkMode = false;
+
+  ngOnInit(): void {
+    // Initialize component
+  }
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
