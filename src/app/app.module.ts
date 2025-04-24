@@ -7,10 +7,17 @@ import { SharedComponent } from './pages/shared/shared.component';
 import { FormComponent } from './pages/form/form.component';
 import { AppRoutingModule } from './app-routing.module';
 import { FooterComponent } from './component/footer/footer.component';
-import { NarvarComponent } from './component/narvar/narvar.component';
+import { NavbarComponent } from './component/navbar/navbar.component';
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, SharedComponent, FormComponent, FooterComponent, NarvarComponent],
+  declarations: [
+    AppComponent,
+    HomeComponent,
+    SharedComponent,
+    FormComponent,
+    FooterComponent,
+    NavbarComponent,
+  ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
   bootstrap: [AppComponent],

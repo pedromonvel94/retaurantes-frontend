@@ -1,0 +1,148 @@
+<nav
+  class="bg-white dark:bg-gray-900 shadow-md border-b border-gray-200 dark:border-gray-700"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+      <div class="flex items-center">
+        <a routerLink="/home" class="flex items-center">
+          <svg
+            class="h-8 w-8 text-amber-600 mr-2"
+            viewBox="0 0 512 512"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M256 0C153.755 0 70.573 83.182 70.573 185.426c0 126.888 165.939 313.167 173.004 321.035C247.711 510.901 251.809 512 256 512s8.289-1.099 12.423-5.539c7.065-7.868 173.004-194.147 173.004-321.035C441.425 83.182 358.244 0 256 0zm0 278.719c-51.442 0-93.292-41.851-93.292-93.293S204.559 92.134 256 92.134s93.291 41.851 93.291 93.293-41.85 93.292-93.291 93.292z"
+            />
+            <path
+              d="M256 139.361c-25.347 0-45.969 20.623-45.969 45.969 0 6.902 1.501 13.681 4.39 19.956v54.667c0 11.685 9.574 21.259 21.259 21.259h40.64c11.685 0 21.259-9.574 21.259-21.259v-54.667c2.889-6.275 4.39-13.054 4.39-19.956 0-25.347-20.622-45.969-45.969-45.969zm8.69 110.751c0 1.355-1.1 2.455-2.455 2.455h-12.471c-1.355 0-2.455-1.1-2.455-2.455v-26.236h17.381v26.236zm17.381-48.737c0 1.355-1.1 2.455-2.455 2.455H232.383c-1.355 0-2.455-1.1-2.455-2.455 0-14.357 11.713-26.07 26.071-26.07 14.357.001 26.072 11.713 26.072 26.07z"
+            />
+          </svg>
+          <span class="text-2xl font-bold text-amber-600 dark:text-amber-500"
+            >Find<span class="text-gray-800 dark:text-white">MyBite</span></span
+          >
+          <span class="ml-2 text-amber-600 dark:text-amber-500 text-xl"
+            >🍽️</span
+          >
+        </a>
+        <div class="hidden md:ml-6 md:flex md:space-x-4">
+          <a
+            class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-amber-100 hover:text-amber-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-amber-400 transition-colors duration-200"
+            routerLink="/home"
+            routerLinkActive="bg-amber-100 text-amber-700 dark:bg-gray-700 dark:text-amber-400"
+            >🏠 Home</a
+          >
+          <a
+            class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-amber-100 hover:text-amber-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-amber-400 transition-colors duration-200"
+            routerLink="/shared"
+            routerLinkActive="bg-amber-100 text-amber-700 dark:bg-gray-700 dark:text-amber-400"
+            >🔎 Search Restaurants</a
+          >
+          <a
+            class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-amber-100 hover:text-amber-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-amber-400 transition-colors duration-200"
+            routerLink="/form"
+            routerLinkActive="bg-amber-100 text-amber-700 dark:bg-gray-700 dark:text-amber-400"
+            >📝 New Restaurant</a
+          >
+          <a
+            class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-amber-100 hover:text-amber-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-amber-400 transition-colors duration-200"
+            routerLink="/favorites"
+            routerLinkActive="bg-amber-100 text-amber-700 dark:bg-gray-700 dark:text-amber-400"
+            >❤️ Favorites</a
+          >
+        </div>
+      </div>
+
+      <div class="flex items-center">
+        <div class="hidden md:flex items-center relative mr-4">
+          <input
+            type="text"
+            placeholder="Search restaurants..."
+            class="pl-8 pr-3 py-1 rounded-full text-sm border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-600"
+          />
+          <span class="absolute left-2 text-gray-400">🔍</span>
+        </div>
+
+        <div class="md:hidden">
+          <button
+            (click)="toggleMenu()"
+            class="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none transition-colors duration-200"
+            aria-label="Menu"
+          >
+            <ng-container *ngIf="!isMenuOpen">
+              <svg
+                class="h-6 w-6 text-gray-800 dark:text-gray-200"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </ng-container>
+            <ng-container *ngIf="isMenuOpen">
+              <svg
+                class="h-6 w-6 text-gray-800 dark:text-gray-200"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </ng-container>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isMenuOpen" class="md:hidden bg-white dark:bg-gray-900 shadow-lg">
+    <div class="p-3 border-b border-gray-200 dark:border-gray-700">
+      <div class="relative">
+        <input
+          type="text"
+          placeholder="Search restaurants..."
+          class="w-full pl-8 pr-3 py-2 rounded-md text-sm border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-600"
+        />
+        <span class="absolute left-2 top-2 text-gray-400">🔍</span>
+      </div>
+    </div>
+    <div class="px-2 pt-2 pb-3 space-y-1">
+      <a
+        routerLink="/home"
+        routerLinkActive="bg-amber-100 text-amber-700 dark:bg-gray-700 dark:text-amber-400"
+        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-amber-100 hover:text-amber-700 dark:hover:bg-gray-700 dark:hover:text-amber-400 transition-colors duration-200"
+        >🏠 Home</a
+      >
+      <a
+        routerLink="/shared"
+        routerLinkActive="bg-amber-100 text-amber-700 dark:bg-gray-700 dark:text-amber-400"
+        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-amber-100 hover:text-amber-700 dark:hover:bg-gray-700 dark:hover:text-amber-400 transition-colors duration-200"
+        >🔎 Search Restaurants</a
+      >
+      <a
+        routerLink="/form"
+        routerLinkActive="bg-amber-100 text-amber-700 dark:bg-gray-700 dark:text-amber-400"
+        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-amber-100 hover:text-amber-700 dark:hover:bg-gray-700 dark:hover:text-amber-400 transition-colors duration-200"
+        >📝 New Restaurant</a
+      >
+      <a
+        routerLink="/favorites"
+        routerLinkActive="bg-amber-100 text-amber-700 dark:bg-gray-700 dark:text-amber-400"
+        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-amber-100 hover:text-amber-700 dark:hover:bg-gray-700 dark:hover:text-amber-400 transition-colors duration-200"
+        >❤️ Favorites</a
+      >
+    </div>
+  </div>
+</nav>
