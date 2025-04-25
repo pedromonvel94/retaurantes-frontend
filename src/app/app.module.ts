@@ -9,6 +9,8 @@ import { FormComponent } from './pages/form/form.component';
 import { AppRoutingModule } from './app-routing.module';
 import { FooterComponent } from './component/footer/footer.component';
 import { NavbarComponent } from './component/navbar/navbar.component';
+import { HttpClientModule } from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
 import { CardComponent } from './component/card/card.component';
 
 @NgModule({
@@ -21,7 +23,8 @@ import { CardComponent } from './component/card/card.component';
     NavbarComponent,
     CardComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule, FormsModule],
+  imports: [BrowserModule, AppRoutingModule,  ReactiveFormsModule,
+    HttpClientModule, FormsModule],
   providers: [],
   bootstrap: [AppComponent],
 })
