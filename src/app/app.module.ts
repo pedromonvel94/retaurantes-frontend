@@ -8,6 +8,8 @@ import { FormComponent } from './pages/form/form.component';
 import { AppRoutingModule } from './app-routing.module';
 import { FooterComponent } from './component/footer/footer.component';
 import { NavbarComponent } from './component/navbar/navbar.component';
+import { HttpClientModule } from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,8 @@ import { NavbarComponent } from './component/navbar/navbar.component';
     FooterComponent,
     NavbarComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule],
+  imports: [BrowserModule, AppRoutingModule,  ReactiveFormsModule,
+    HttpClientModule,],
   providers: [],
   bootstrap: [AppComponent],
 })

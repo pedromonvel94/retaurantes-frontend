@@ -1,1 +1,91 @@
-<p>form works!</p>
+<div class="max-w-md mx-auto mt-10">
+    <form
+      [formGroup]="formulario"
+      (ngSubmit)="onSubmit()"
+      class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+    >
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="nombre">Nombre</label>
+        <input
+          formControlName="nombre"
+          type="text"
+          id="nombre"
+          placeholder="Nombre"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        />
+      </div>
+  
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="descripcion">Descripción</label>
+        <textarea
+          formControlName="descripcion"
+          id="descripcion"
+          placeholder="Descripción"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        ></textarea>
+      </div>
+  
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="direccion">Dirección</label>
+        <input
+          formControlName="direccion"
+          type="text"
+          id="direccion"
+          placeholder="Dirección"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        />
+      </div>
+  
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="imagen">Imagen</label>
+        <input
+          type="file"
+          (change)="onFileSelected($event)"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        />
+      </div>
+  
+      <div class="flex items-center justify-between">
+        <button
+          type="submit"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Enviar
+        </button>
+      </div>
+    </form>
+  
+    <h3>Datos almacenados</h3>
+    <ul *ngIf="datosGuardados.length > 0; else sinDatos">
+      <li *ngFor="let item of datosGuardados">
+        <strong>Nombre:</strong> {{ item.nombre }}<br />
+        <strong>Descripción:</strong> {{ item.descripcion }}<br />
+        <strong>Dirección:</strong> {{ item.direccion }}<br />
+        <img
+          [src]="'data:image/jpeg;base64,' + item.imagenBase64"
+          alt="imagen"
+          width="150"
+        />
+        <div class="mt-2">
+          <button
+            (click)="eliminarDato(item.id)"
+            class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Eliminar
+          </button>
+          <button
+            (click)="abrirFormularioActualizar(item)"
+            class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Actualizar
+          </button>
+        </div>
+        <hr />
+      </li>
+    </ul>
+  
+    <ng-template #sinDatos>
+      <p>No hay datos disponibles</p>
+    </ng-template>
+  </div>
+  
