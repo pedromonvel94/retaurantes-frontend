@@ -9,6 +9,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { FooterComponent } from './component/footer/footer.component';
 import { NavbarComponent } from './component/navbar/navbar.component';
 import { CardComponent } from './component/card/card.component';
+import { HeroComponent } from './component/hero/hero.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { CardComponent } from './component/card/card.component';
     FooterComponent,
     NavbarComponent,
     CardComponent,
+    HeroComponent,
   ],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
