@@ -100,7 +100,7 @@ app.delete("/eliminar/:id", (req, res) => {
 });
 
 // Ruta para actualizar un dato
-app.put("/actualizar/:id", (req, res) => {
+app.put("/actualizar/:id", upload.single("image"), (req, res) => {
   const { name, description, address } = req.body;
   const id = parseInt(req.params.id);
 
@@ -116,18 +116,23 @@ app.put("/actualizar/:id", (req, res) => {
       return res.status(404).send("Data not found.");
     }
 
-    // Actualizar solo los campos proporcionados (sin imagen)
+    // Convertir imagen a Base64 si se proporciona una nueva
+    let imageBase64 = savedData[index].image;
+    if (req.file && req.file.buffer) {
+      imageBase64 = req.file.buffer.toString("base64");
+    }
+
+    // Actualizar el dato (solo si se proporcionan nuevos valores)
     const updatedData = {
       ...savedData[index],
-      name,
-      description,
-      address,
-      // La imagen se mantiene como estaba (no se modifica)
+      name: name || savedData[index].name,
+      description: description || savedData[index].description,
+      address: address || savedData[index].address,
+      image: imageBase64,
     };
 
     savedData[index] = updatedData;
 
-    // Guardar los datos actualizados
     fs.writeFile(jsonFilePath, JSON.stringify(savedData, null, 2), (err) => {
       if (err) {
         return res.status(500).send("Error updating data.");
@@ -136,6 +141,7 @@ app.put("/actualizar/:id", (req, res) => {
     });
   });
 });
+
 
 
 // Iniciar el servidor
