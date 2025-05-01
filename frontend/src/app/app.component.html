@@ -1,9 +1,13 @@
-<div class="min-h-screen flex flex-col">
-    <app-navbar></app-navbar>
+<div class="min-h-screen flex flex-col bg-gray-800">
+  <app-navbar class="fixed top-0 w-full z-50 bg-gray-900"></app-navbar>
   
-    <main class="flex-grow">
-      <router-outlet></router-outlet>
-    </main>
+  <main class="flex mt-20 flex-grow">
+    <router-outlet></router-outlet>
+  </main>
   
+  <main class="">
+    <router-outlet></router-outlet>
+  </main>
+
     <app-footer></app-footer>
   </div>
