@@ -16,19 +16,9 @@ const uploadPath = path.join(__dirname, "uploads");
 const jsonFilePath = path.join(__dirname, "datos.json");
 
 // Configurar Multer para la carga de imágenes
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-
+const storage = multer.memoryStorage(); // No guarda archivos en disco
 const upload = multer({ storage });
+
 
 // Middleware para permitir CORS y JSON
 app.use(cors());
@@ -37,38 +27,28 @@ app.use(express.json());
 // Ruta para guardar datos nuevos
 app.post("/guardar", upload.single("image"), (req, res) => {
   const { name, description, address } = req.body;
-  const image = req.file ? req.file.filename : null;
 
-  // Leer la imagen y convertirla a Base64
   let imageBase64 = "";
-  if (image) {
-    const imagePath = path.join(uploadPath, image);
-    try {
-      const imageBuffer = fs.readFileSync(imagePath);
-      imageBase64 = imageBuffer.toString("base64"); // Convertir imagen a Base64
-    } catch (error) {
-      return res.status(500).send("Error reading image.");
-    }
+  if (req.file) {
+    imageBase64 = req.file.buffer.toString("base64"); // Convertir directamente desde buffer
   }
 
-  // Leer el archivo JSON
   fs.readFile(jsonFilePath, (err, data) => {
     if (err && err.code !== "ENOENT") {
       return res.status(500).send("Error reading data.");
     }
 
-    const savedData = data ? JSON.parse(data.toString()) : []; // Si el archivo no existe, inicializamos como array vacío.
+    const savedData = data ? JSON.parse(data.toString()) : [];
     const newData = {
-      id: Date.now(), // Usamos el timestamp como ID único
+      id: Date.now(),
       name,
       description,
       address,
-      image: imageBase64, // Guardar la imagen en Base64
+      image: imageBase64,
     };
 
     savedData.push(newData);
 
-    // Escribir los datos actualizados al archivo JSON
     fs.writeFile(jsonFilePath, JSON.stringify(savedData, null, 2), (err) => {
       if (err) {
         return res.status(500).send("Error saving data.");
@@ -77,6 +57,7 @@ app.post("/guardar", upload.single("image"), (req, res) => {
     });
   });
 });
+
 
 // Ruta para listar los datos
 app.get("/listar", (req, res) => {
@@ -119,9 +100,8 @@ app.delete("/eliminar/:id", (req, res) => {
 });
 
 // Ruta para actualizar un dato
-app.put("/actualizar/:id", upload.single("image"), (req, res) => {
+app.put("/actualizar/:id", (req, res) => {
   const { name, description, address } = req.body;
-  const image = req.file ? req.file.filename : null;
   const id = parseInt(req.params.id);
 
   fs.readFile(jsonFilePath, (err, data) => {
@@ -136,30 +116,18 @@ app.put("/actualizar/:id", upload.single("image"), (req, res) => {
       return res.status(404).send("Data not found.");
     }
 
-    // Convertir la nueva imagen a Base64 si existe
-    let imageBase64 = savedData[index].image; // Si no se proporciona imagen nueva, mantener la anterior
-    if (image) {
-      const imagePath = path.join(uploadPath, image);
-      try {
-        const imageBuffer = fs.readFileSync(imagePath);
-        imageBase64 = imageBuffer.toString("base64");
-      } catch (error) {
-        return res.status(500).send("Error reading image.");
-      }
-    }
-
-    // Actualizar el dato
+    // Actualizar solo los campos proporcionados (sin imagen)
     const updatedData = {
       ...savedData[index],
       name,
       description,
       address,
-      image: imageBase64, // Actualizar con la nueva imagen en Base64
+      // La imagen se mantiene como estaba (no se modifica)
     };
 
     savedData[index] = updatedData;
 
-    // Escribir los datos actualizados al archivo JSON
+    // Guardar los datos actualizados
     fs.writeFile(jsonFilePath, JSON.stringify(savedData, null, 2), (err) => {
       if (err) {
         return res.status(500).send("Error updating data.");
@@ -168,6 +136,7 @@ app.put("/actualizar/:id", upload.single("image"), (req, res) => {
     });
   });
 });
+
 
 // Iniciar el servidor
 app.listen(PORT, () => {
