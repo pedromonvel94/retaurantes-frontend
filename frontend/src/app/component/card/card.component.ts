@@ -1,10 +1,28 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+interface CardItem {
+  id: number;
+  name: string;
+  description: string;
+  address: string;
+  image: string;
+}
 
 @Component({
   selector: 'app-card',
   templateUrl: './card.component.html',
-  styleUrls: ['./card.component.css']
+  styleUrls: ['./card.component.css'],
 })
-export class CardComponent {
+export class CardComponent implements OnInit {
+  cards: CardItem[] = [];
 
+  constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    this.http.get<CardItem[]>('http://localhost:3000/listar').subscribe((data) => {
+      this.cards = data;
+    });
+  }
 }
+
