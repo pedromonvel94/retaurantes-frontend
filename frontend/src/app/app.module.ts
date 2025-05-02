@@ -12,6 +12,7 @@ import { NavbarComponent } from './component/navbar/navbar.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CardComponent } from './component/card/card.component';
+import { HeroComponent } from './component/hero/hero.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { CardComponent } from './component/card/card.component';
     FooterComponent,
     NavbarComponent,
     CardComponent,
+    HeroComponent,
   ],
   imports: [BrowserModule, AppRoutingModule,  ReactiveFormsModule,
     HttpClientModule, FormsModule],
