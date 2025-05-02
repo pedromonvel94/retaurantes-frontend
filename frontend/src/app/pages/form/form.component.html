@@ -1,91 +1,153 @@
-<div class="max-w-md mx-auto mt-10">
-    <form
-      [formGroup]="formulario"
-      (ngSubmit)="onSubmit()"
-      class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-    >
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="nombre">Nombre</label>
-        <input
-          formControlName="nombre"
-          type="text"
-          id="nombre"
-          placeholder="Nombre"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        />
-      </div>
-  
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="descripcion">Descripción</label>
-        <textarea
-          formControlName="descripcion"
-          id="descripcion"
-          placeholder="Descripción"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        ></textarea>
-      </div>
-  
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="direccion">Dirección</label>
-        <input
-          formControlName="direccion"
-          type="text"
-          id="direccion"
-          placeholder="Dirección"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        />
-      </div>
-  
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="imagen">Imagen</label>
-        <input
-          type="file"
-          (change)="onFileSelected($event)"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        />
-      </div>
-  
-      <div class="flex items-center justify-between">
-        <button
-          type="submit"
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        >
-          Enviar
-        </button>
-      </div>
-    </form>
-  
-    <h3>Datos almacenados</h3>
-    <ul *ngIf="datosGuardados.length > 0; else sinDatos">
-      <li *ngFor="let item of datosGuardados">
-        <strong>Nombre:</strong> {{ item.nombre }}<br />
-        <strong>Descripción:</strong> {{ item.descripcion }}<br />
-        <strong>Dirección:</strong> {{ item.direccion }}<br />
-        <img
-          [src]="'data:image/jpeg;base64,' + item.imagenBase64"
-          alt="imagen"
-          width="150"
-        />
-        <div class="mt-2">
+<div class="bg-gray-800 min-h-screen p-8">
+  <div class="container mx-auto flex flex-col lg:flex-row gap-8">
+    <!-- Columna izquierda (formulario) -->
+    <div class="lg:w-1/2 lg:sticky lg:top-8 lg:h-fit">
+      <form
+        [formGroup]="formulario"
+        (ngSubmit)="onSubmit()"
+        class="bg-gray-900 p-6 rounded-lg shadow-lg"
+      >
+        <h2 class="text-2xl font-bold text-white mb-6 text-center">Formulario de Registro</h2>
+        
+        <div class="mb-4">
+          <label class="block text-white text-sm font-bold mb-2" for="name">Nombre</label>
+          <input
+            formControlName="name"
+            type="text"
+            id="name"
+            placeholder="Name"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+    
+        <div class="mb-4">
+          <label class="block text-white text-sm font-bold mb-2" for="description">Descripción</label>
+          <textarea
+            formControlName="description"
+            id="description"
+            placeholder="Description"
+            rows="4"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500"
+          ></textarea>
+        </div>
+    
+        <div class="mb-4">
+          <label class="block text-white text-sm font-bold mb-2" for="address">Dirección</label>
+          <input
+            formControlName="address"
+            type="text"
+            id="address"
+            placeholder="Address"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+    
+        <div class="mb-6">
+          <label class="block text-white text-sm font-bold mb-2" for="image">Imagen</label>
+          <input
+            type="file"
+            (change)="onFileSelected($event)"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          />
+        </div>
+    
+        <div class="flex items-center justify-between gap-2">
+          <!-- Botón Enviar -->
           <button
-            (click)="eliminarDato(item.id)"
-            class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center gap-2 transition-colors duration-300"
           >
-            Eliminar
+            <!-- Ícono de guardar (disquete) -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10v1" />
+            </svg>
+            Guardar
           </button>
+      
+          <!-- Botón Limpiar -->
           <button
-            (click)="abrirFormularioActualizar(item)"
-            class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="button"
+            id="btnLimpiar"
+            (click)="limpiarFormulario()"
+            class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center gap-2 transition-colors duration-300"
           >
-            Actualizar
+            <!-- Ícono de limpiar -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Limpiar
           </button>
         </div>
-        <hr />
-      </li>
-    </ul>
-  
-    <ng-template #sinDatos>
-      <p>No hay datos disponibles</p>
-    </ng-template>
+      </form>
+    </div>
+
+    <!-- Columna derecha (datos almacenados) -->
+    <div class="lg:w-1/2">
+      <div class="bg-gray-900 p-6 rounded-lg shadow-lg">
+        <h3 class="text-xl font-bold text-white mb-4 border-b pb-2">Datos almacenados</h3>
+        <ul *ngIf="datosGuardados.length > 0; else sinDatos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+          <li *ngFor="let item of datosGuardados" class="bg-gray-800 rounded-lg shadow-md overflow-hidden">
+            <!-- Imagen del restaurante -->
+            <div class="h-40 overflow-hidden">
+              <img
+                [src]="'data:image/jpeg;base64,' + item.image"
+                alt="Restaurante {{item.name}}"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            
+            <!-- Contenido de la tarjeta -->
+            <div class="p-4 flex flex-col">
+              <!-- Título -->
+              <div class="flex justify-center text-center mb-3">
+                <h2 class="text-xl font-bold border-b border-amber-500 pb-2 text-amber-500 uppercase w-full">
+                  {{item.name}}
+                </h2>
+              </div>
+              
+              <!-- Descripción y dirección -->
+              <div class="mb-4">
+                <p class="text-gray-300 mb-2">{{item.description}}</p>
+                <p class="text-gray-400 italic text-sm">Dirección: {{item.address}}</p>
+              </div>
+              
+              <!-- Botones -->
+              <div class="mt-auto flex justify-between gap-2">
+                <button
+                  (click)="eliminarDato(item.id)"
+                  class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex-1 flex items-center justify-center gap-2 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Eliminar
+                </button>
+                
+                <button
+                  (click)="abrirFormularioActualizar(item)"
+                  class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded flex-1 flex items-center justify-center gap-2 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Editar
+                </button>
+              </div>
+            </div>
+          </li>
+        </ul>
+        
+        <ng-template #sinDatos>
+          <div class="col-span-full text-center py-8">
+            <p class="text-gray-400 italic">No hay restaurantes registrados</p>
+          </div>
+        </ng-template>
+
+      </div>
+    </div>
   </div>
-  
+</div>

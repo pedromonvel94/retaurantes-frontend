@@ -1,10 +1,10 @@
-import express from 'express';
-import multer from 'multer';
-import fs from 'fs';
-import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { Buffer } from 'buffer';
+import express from "express";
+import multer from "multer";
+import fs from "fs";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+import { Buffer } from "buffer";
 
 // Configuración de __dirname para módulos ES
 const __filename = fileURLToPath(import.meta.url);
@@ -12,164 +12,139 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = 3000;
-const uploadPath = path.join(__dirname, 'uploads');
-const jsonFilePath = path.join(__dirname, 'datos.json');
+const uploadPath = path.join(__dirname, "uploads");
+const jsonFilePath = path.join(__dirname, "datos.json");
 
 // Configurar Multer para la carga de imágenes
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
-});
-
+const storage = multer.memoryStorage(); // No guarda archivos en disco
 const upload = multer({ storage });
+
 
 // Middleware para permitir CORS y JSON
 app.use(cors());
 app.use(express.json());
 
 // Ruta para guardar datos nuevos
-app.post('/guardar', upload.single('imagen'), (req, res) => {
-  const { nombre, descripcion, direccion } = req.body;
-  const imagen = req.file ? req.file.filename : null;
+app.post("/guardar", upload.single("image"), (req, res) => {
+  const { name, description, address } = req.body;
 
-  // Leer la imagen y convertirla a Base64
-  let imagenBase64 = '';
-  if (imagen) {
-    const imagenPath = path.join(uploadPath, imagen);
-    try {
-      const imagenBuffer = fs.readFileSync(imagenPath);
-      imagenBase64 = imagenBuffer.toString('base64'); // Convertir imagen a Base64
-    } catch (error) {
-      return res.status(500).send('Error al leer la imagen.');
-    }
+  let imageBase64 = "";
+  if (req.file) {
+    imageBase64 = req.file.buffer.toString("base64"); // Convertir directamente desde buffer
   }
 
-  // Leer el archivo JSON
   fs.readFile(jsonFilePath, (err, data) => {
-    if (err && err.code !== 'ENOENT') {
-      return res.status(500).send('Error al leer los datos.');
+    if (err && err.code !== "ENOENT") {
+      return res.status(500).send("Error reading data.");
     }
 
-    const datosGuardados = data ? JSON.parse(data.toString()) : []; // Si el archivo no existe, inicializamos como array vacío.
-    const nuevoDato = {
-      id: Date.now(), // Usamos el timestamp como ID único
-      nombre,
-      descripcion,
-      direccion,
-      imagen: imagenBase64, // Guardar la imagen en Base64
+    const savedData = data ? JSON.parse(data.toString()) : [];
+    const newData = {
+      id: Date.now(),
+      name,
+      description,
+      address,
+      image: imageBase64,
     };
 
-    datosGuardados.push(nuevoDato);
+    savedData.push(newData);
 
-    // Escribir los datos actualizados al archivo JSON
-    fs.writeFile(jsonFilePath, JSON.stringify(datosGuardados, null, 2), (err) => {
+    fs.writeFile(jsonFilePath, JSON.stringify(savedData, null, 2), (err) => {
       if (err) {
-        return res.status(500).send('Error al guardar los datos.');
+        return res.status(500).send("Error saving data.");
       }
-      res.send({ mensaje: 'Datos guardados correctamente.' });
+      res.send({ message: "Data saved successfully." });
     });
   });
 });
 
+
 // Ruta para listar los datos
-app.get('/listar', (req, res) => {
+app.get("/listar", (req, res) => {
   fs.readFile(jsonFilePath, (err, data) => {
     if (err) {
-      return res.status(500).send('Error al leer los datos.');
+      return res.status(500).send("Error reading data.");
     }
 
-    const datosGuardados = JSON.parse(data.toString() || '[]');
-    res.json(datosGuardados);
+    const savedData = JSON.parse(data.toString() || "[]");
+    res.json(savedData);
   });
 });
 
 // Ruta para eliminar un dato
-app.delete('/eliminar/:id', (req, res) => {
+app.delete("/eliminar/:id", (req, res) => {
   const id = parseInt(req.params.id);
 
   fs.readFile(jsonFilePath, (err, data) => {
     if (err) {
-      return res.status(500).send('Error al leer los datos.');
+      return res.status(500).send("Error reading data.");
     }
 
-    const datosGuardados = JSON.parse(data.toString() || '[]');
-    const index = datosGuardados.findIndex(d => d.id === id);
+    const savedData = JSON.parse(data.toString() || "[]");
+    const index = savedData.findIndex((d) => d.id === id);
 
     if (index === -1) {
-      return res.status(404).send('Dato no encontrado.');
+      return res.status(404).send("Data not found.");
     }
 
     // Eliminar el dato
-    datosGuardados.splice(index, 1);
+    savedData.splice(index, 1);
 
-    fs.writeFile(jsonFilePath, JSON.stringify(datosGuardados, null, 2), (err) => {
+    fs.writeFile(jsonFilePath, JSON.stringify(savedData, null, 2), (err) => {
       if (err) {
-        return res.status(500).send('Error al eliminar el dato.');
+        return res.status(500).send("Error deleting data.");
       }
-      res.send({ mensaje: 'Dato eliminado correctamente.' });
+      res.send({ message: "Data deleted successfully." });
     });
   });
 });
 
 // Ruta para actualizar un dato
-app.put('/actualizar/:id', upload.single('imagen'), (req, res) => {
-  const { nombre, descripcion, direccion } = req.body;
-  const imagen = req.file ? req.file.filename : null;
+app.put("/actualizar/:id", upload.single("image"), (req, res) => {
+  const { name, description, address } = req.body;
   const id = parseInt(req.params.id);
 
   fs.readFile(jsonFilePath, (err, data) => {
     if (err) {
-      return res.status(500).send('Error al leer los datos.');
+      return res.status(500).send("Error reading data.");
     }
 
-    const datosGuardados = JSON.parse(data.toString() || '[]');
-    const index = datosGuardados.findIndex(d => d.id === id);
+    const savedData = JSON.parse(data.toString() || "[]");
+    const index = savedData.findIndex((d) => d.id === id);
 
     if (index === -1) {
-      return res.status(404).send('Dato no encontrado.');
+      return res.status(404).send("Data not found.");
     }
 
-    // Convertir la nueva imagen a Base64 si existe
-    let imagenBase64 = datosGuardados[index].imagen; // Si no se proporciona imagen nueva, mantener la anterior
-    if (imagen) {
-      const imagenPath = path.join(uploadPath, imagen);
-      try {
-        const imagenBuffer = fs.readFileSync(imagenPath);
-        imagenBase64 = imagenBuffer.toString('base64');
-      } catch (error) {
-        return res.status(500).send('Error al leer la imagen.');
-      }
+    // Convertir imagen a Base64 si se proporciona una nueva
+    let imageBase64 = savedData[index].image;
+    if (req.file && req.file.buffer) {
+      imageBase64 = req.file.buffer.toString("base64");
     }
 
-    // Actualizar el dato
-    const updatedDato = {
-      ...datosGuardados[index],
-      nombre,
-      descripcion,
-      direccion,
-      imagenBase64: imagenBase64, // Actualizar con la nueva imagen en Base64
+    // Actualizar el dato (solo si se proporcionan nuevos valores)
+    const updatedData = {
+      ...savedData[index],
+      name: name || savedData[index].name,
+      description: description || savedData[index].description,
+      address: address || savedData[index].address,
+      image: imageBase64,
     };
 
-    datosGuardados[index] = updatedDato;
+    savedData[index] = updatedData;
 
-    // Escribir los datos actualizados al archivo JSON
-    fs.writeFile(jsonFilePath, JSON.stringify(datosGuardados, null, 2), (err) => {
+    fs.writeFile(jsonFilePath, JSON.stringify(savedData, null, 2), (err) => {
       if (err) {
-        return res.status(500).send('Error al actualizar los datos.');
+        return res.status(500).send("Error updating data.");
       }
-      res.send({ mensaje: 'Datos actualizados correctamente.' });
+      res.send({ message: "Data updated successfully." });
     });
   });
 });
 
+
+
 // Iniciar el servidor
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });

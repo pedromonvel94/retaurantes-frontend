@@ -1,11 +1,11 @@
-import { HttpClient } from "@angular/common/http";
-import { Component, OnInit } from "@angular/core";
-import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { HttpClient } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-form',
   templateUrl: './form.component.html',
-  styleUrls: ['./form.component.css']
+  styleUrls: ['./form.component.css'],
 })
 export class FormComponent implements OnInit {
   formulario: FormGroup;
@@ -17,10 +17,10 @@ export class FormComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private http: HttpClient) {
     this.formulario = this.fb.group({
-      nombre: ['', Validators.required],
-      descripcion: ['', Validators.required],
-      direccion: ['', Validators.required],
-      imagen: [null] // No es obligatorio para la actualización
+      name: ['', Validators.required],
+      description: ['', Validators.required],
+      address: ['', Validators.required],
+      image: [null], // No es obligatorio para la actualización
     });
   }
 
@@ -34,8 +34,8 @@ export class FormComponent implements OnInit {
     this.selectedFile = file;
 
     if (file) {
-      this.formulario.patchValue({ imagen: file });
-      this.formulario.get('imagen')?.updateValueAndValidity();
+      this.formulario.patchValue({ image: file });
+      this.formulario.get('image')?.updateValueAndValidity();
 
       const reader = new FileReader();
       reader.onload = () => {
@@ -46,41 +46,49 @@ export class FormComponent implements OnInit {
   }
 
   // Enviar formulario (crear nuevo o actualizar)
+  limpiarFormulario() {
+    this.formulario.reset();
+    this.imagePreview = null;
+    this.selectedFile = null;
+    this.currentId = null;
+  }
   onSubmit() {
     if (this.formulario.valid) {
       const formData = new FormData();
-      formData.append('nombre', this.formulario.get('nombre')?.value);
-      formData.append('descripcion', this.formulario.get('descripcion')?.value);
-      formData.append('direccion', this.formulario.get('direccion')?.value);
+      formData.append('name', this.formulario.get('name')?.value);
+      formData.append('description', this.formulario.get('description')?.value);
+      formData.append('address', this.formulario.get('address')?.value);
       if (this.selectedFile) {
-        formData.append('imagen', this.selectedFile, this.selectedFile.name);
+        formData.append('image', this.selectedFile, this.selectedFile.name);
       }
 
       // Si estamos actualizando un registro, enviamos PUT. Si no, POST.
       if (this.currentId) {
-        this.http.put(`http://localhost:3000/actualizar/${this.currentId}`, formData).subscribe(
-          res => {
-            console.log('Registro actualizado con éxito:', res);
-            this.formulario.reset();
-            this.imagePreview = null;
-            this.selectedFile = null;
-            this.currentId = null; // Resetear el ID después de la actualización
-            this.consultarDatos(); // Actualizamos la lista después de la actualización
-          },
-          err => {
-            console.error('Error al actualizar el registro:', err);
-          }
-        );
+        this.http
+          .put(`http://localhost:3000/actualizar/${this.currentId}`, formData)
+          .subscribe(
+            (res) => {
+              console.log('Registro actualizado con éxito:', res);
+              this.formulario.reset();
+              this.imagePreview = null;
+              this.selectedFile = null;
+              this.currentId = null; // Resetear el ID después de la actualización
+              this.consultarDatos(); // Actualizamos la lista después de la actualización
+            },
+            (err) => {
+              console.error('Error al actualizar el registro:', err);
+            }
+          );
       } else {
         this.http.post('http://localhost:3000/guardar', formData).subscribe(
-          res => {
+          (res) => {
             console.log('Formulario enviado con éxito:', res);
             this.formulario.reset();
             this.imagePreview = null;
             this.selectedFile = null;
             this.consultarDatos(); // Actualizar la lista de datos después de agregar uno nuevo
           },
-          err => {
+          (err) => {
             console.error('Error al enviar el formulario:', err);
           }
         );
@@ -93,11 +101,11 @@ export class FormComponent implements OnInit {
   // Consultar los datos guardados
   consultarDatos() {
     this.http.get<any[]>('http://localhost:3000/listar').subscribe(
-      res => {
+      (res) => {
         this.datosGuardados = res;
         console.log('Datos recibidos:', res);
       },
-      err => {
+      (err) => {
         console.error('Error al consultar los datos:', err);
       }
     );
@@ -106,11 +114,11 @@ export class FormComponent implements OnInit {
   // Eliminar un dato
   eliminarDato(id: number) {
     this.http.delete(`http://localhost:3000/eliminar/${id}`).subscribe(
-      res => {
+      (res) => {
         console.log('Dato eliminado:', res);
         this.consultarDatos(); // Volver a obtener los datos actualizados
       },
-      err => {
+      (err) => {
         console.error('Error al eliminar dato:', err);
       }
     );
@@ -119,12 +127,14 @@ export class FormComponent implements OnInit {
   // Llenar el formulario para actualizar un dato
   abrirFormularioActualizar(item: any) {
     this.formulario.patchValue({
-      nombre: item.nombre,
-      descripcion: item.descripcion,
-      direccion: item.direccion
+      name: item.name,
+      description: item.description,
+      address: item.address,
     });
     this.selectedFile = null; // Si no deseas permitir la actualización de la imagen, lo dejas vacío
-    this.imagePreview = item.imagenBase64 ? `data:image/jpeg;base64,${item.imagenBase64}` : null;
+    this.imagePreview = item.imgae
+      ? `data:image/jpeg;base64,${item.image}`
+      : null;
 
     // Guardar el ID del dato que estamos actualizando
     this.currentId = item.id;
