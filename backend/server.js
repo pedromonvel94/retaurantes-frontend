@@ -1,10 +1,9 @@
 import express from "express";
-import multer from "multer";
-import fs from "fs";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
-import { Buffer } from "buffer";
+import { db } from "./firebase/firebase.js";
+
 
 // Configuración de __dirname para módulos ES
 const __filename = fileURLToPath(import.meta.url);
@@ -12,139 +11,94 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = 3000;
-const uploadPath = path.join(__dirname, "uploads");
-const jsonFilePath = path.join(__dirname, "datos.json");
-
-// Configurar Multer para la carga de imágenes
-const storage = multer.memoryStorage(); // No guarda archivos en disco
-const upload = multer({ storage });
-
 
 // Middleware para permitir CORS y JSON
 app.use(cors());
 app.use(express.json());
 
 // Ruta para guardar datos nuevos
-app.post("/guardar", upload.single("image"), (req, res) => {
-  const { name, description, address } = req.body;
+app.post("/guardar", async (req, res) => {
+  const { name, description, address, image } = req.body;
 
-  let imageBase64 = "";
-  if (req.file) {
-    imageBase64 = req.file.buffer.toString("base64"); // Convertir directamente desde buffer
-  }
-
-  fs.readFile(jsonFilePath, (err, data) => {
-    if (err && err.code !== "ENOENT") {
-      return res.status(500).send("Error reading data.");
-    }
-
-    const savedData = data ? JSON.parse(data.toString()) : [];
+  try {
     const newData = {
-      id: Date.now(),
       name,
       description,
       address,
-      image: imageBase64,
+      image: image || "",
+      createdAt: new Date(),
     };
 
-    savedData.push(newData);
-
-    fs.writeFile(jsonFilePath, JSON.stringify(savedData, null, 2), (err) => {
-      if (err) {
-        return res.status(500).send("Error saving data.");
-      }
-      res.send({ message: "Data saved successfully." });
-    });
-  });
+    const docRef = await db.collection("restaurantes").add(newData);
+    res.send({ message: "Data saved in Firestore!", id: docRef.id });
+  } catch (error) {
+    console.error("Error saving:", error);
+    res.status(500).send("Error saving data.");
+  }
 });
+
 
 
 // Ruta para listar los datos
-app.get("/listar", (req, res) => {
-  fs.readFile(jsonFilePath, (err, data) => {
-    if (err) {
-      return res.status(500).send("Error reading data.");
-    }
-
-    const savedData = JSON.parse(data.toString() || "[]");
-    res.json(savedData);
-  });
+app.get("/listar", async (req, res) => {
+  try {
+    const snapshot = await db.collection("restaurantes").get();
+    const datos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    res.json(datos);
+  } catch (error) {
+    console.error("Error fetching:", error);
+    res.status(500).send("Error listing data.");
+  }
 });
 
 // Ruta para eliminar un dato
-app.delete("/eliminar/:id", (req, res) => {
-  const id = parseInt(req.params.id);
+app.delete("/eliminar/:id", async (req, res) => {
+  const { id } = req.params;
 
-  fs.readFile(jsonFilePath, (err, data) => {
-    if (err) {
-      return res.status(500).send("Error reading data.");
-    }
-
-    const savedData = JSON.parse(data.toString() || "[]");
-    const index = savedData.findIndex((d) => d.id === id);
-
-    if (index === -1) {
-      return res.status(404).send("Data not found.");
-    }
-
-    // Eliminar el dato
-    savedData.splice(index, 1);
-
-    fs.writeFile(jsonFilePath, JSON.stringify(savedData, null, 2), (err) => {
-      if (err) {
-        return res.status(500).send("Error deleting data.");
-      }
-      res.send({ message: "Data deleted successfully." });
-    });
-  });
+  try {
+    await db.collection("restaurantes").doc(id).delete();
+    res.send({ message: "Data deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting:", error);
+    res.status(500).send("Error deleting data.");
+  }
 });
 
 // Ruta para actualizar un dato
-app.put("/actualizar/:id", upload.single("image"), (req, res) => {
-  const { name, description, address } = req.body;
-  const id = parseInt(req.params.id);
+app.put("/actualizar/:id", async (req, res) => {
+  const { id } = req.params;
 
-  fs.readFile(jsonFilePath, (err, data) => {
-    if (err) {
-      return res.status(500).send("Error reading data.");
-    }
+  let updateData = {
+    ...(name && { name }),
+    ...(description && { description }),
+    ...(address && { address }),
+  };
 
-    const savedData = JSON.parse(data.toString() || "[]");
-    const index = savedData.findIndex((d) => d.id === id);
+  if (image !== undefined) {
+    updateData.image = image;
+  }
 
-    if (index === -1) {
-      return res.status(404).send("Data not found.");
-    }
-
-    // Convertir imagen a Base64 si se proporciona una nueva
-    let imageBase64 = savedData[index].image;
-    if (req.file && req.file.buffer) {
-      imageBase64 = req.file.buffer.toString("base64");
-    }
-
-    // Actualizar el dato (solo si se proporcionan nuevos valores)
-    const updatedData = {
-      ...savedData[index],
-      name: name || savedData[index].name,
-      description: description || savedData[index].description,
-      address: address || savedData[index].address,
-      image: imageBase64,
-    };
-
-    savedData[index] = updatedData;
-
-    fs.writeFile(jsonFilePath, JSON.stringify(savedData, null, 2), (err) => {
-      if (err) {
-        return res.status(500).send("Error updating data.");
-      }
-      res.send({ message: "Data updated successfully." });
-    });
-  });
+  try {
+    await db.collection("restaurantes").doc(id).update(updateData);
+    res.send({ message: "Data updated successfully." });
+  } catch (error) {
+    console.error("Error updating:", error);
+    res.status(500).send("Error updating data.");
+  }
 });
-
-
 
 // Iniciar el servidor
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
+});
+
+//Testeo conexion firebase
+app.get("/test-firebase", async (req, res) => {
+  try {
+    const doc = await db.collection("test").add({ connected: true, timestamp: new Date() });
+    res.send(`Firebase is connected. Document ID: ${doc.id}`);
+  } catch (error) {
+    console.error("Firebase connection error:", error);
+    res.status(500).send("Failed to connect to Firebase");
+  }
 });
