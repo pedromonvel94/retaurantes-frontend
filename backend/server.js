@@ -11,11 +11,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = 3000;
 
-// Middleware para permitir CORS y JSON
 app.use(cors());
 app.use(express.json());
 
-// Ruta para guardar datos nuevos
 app.post("/guardar", async (req, res) => {
   const { name, description, address, image } = req.body;
 
@@ -38,7 +36,6 @@ app.post("/guardar", async (req, res) => {
 
 
 
-// Ruta para listar los datos
 app.get("/listar", async (req, res) => {
   try {
     const snapshot = await db.collection("restaurantes").get();
@@ -50,7 +47,6 @@ app.get("/listar", async (req, res) => {
   }
 });
 
-// Ruta para eliminar un dato
 app.delete("/eliminar/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -63,9 +59,9 @@ app.delete("/eliminar/:id", async (req, res) => {
   }
 });
 
-// Ruta para actualizar un dato
 app.put("/actualizar/:id", async (req, res) => {
   const { id } = req.params;
+  const { name, description, address, image } = req.body;
 
   let updateData = {
     ...(name && { name }),
@@ -86,12 +82,10 @@ app.put("/actualizar/:id", async (req, res) => {
   }
 });
 
-// Iniciar el servidor
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
 
-//Testeo conexion firebase
 app.get("/test-firebase", async (req, res) => {
   try {
     const doc = await db.collection("test").add({ connected: true, timestamp: new Date() });
