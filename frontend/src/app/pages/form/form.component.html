@@ -45,9 +45,10 @@
         <div class="mb-6">
           <label class="block text-white text-sm font-bold mb-2" for="image">Imagen</label>
           <input
-            type="file"
-            (change)="onFileSelected($event)"
-            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            formControlName="image" type="text"
+            id="imageUrl"
+            placeholder="Pega la URL de la imagen aquí"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500"
           />
         </div>
     
@@ -94,8 +95,7 @@
             <!-- Imagen del restaurante -->
             <div class="h-40 overflow-hidden">
               <img
-                [src]="'data:image/jpeg;base64,' + item.image"
-                alt="Restaurante {{item.name}}"
+                [src]="item.image" alt="Restaurante {{item.name}}"
                 class="w-full h-full object-cover"
               />
             </div>
