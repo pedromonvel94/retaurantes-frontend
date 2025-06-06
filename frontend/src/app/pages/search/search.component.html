@@ -1,215 +1,86 @@
 <div class="min-h-screen">
   <div class="container mx-auto px-4 py-8">
-    <div class="mb-8">
+    <div class="">
       <h1 class="text-3xl font-bold text-white mb-4">Find Your Restaurant</h1>
       <div class="flex items-center bg-white rounded-lg p-2 shadow-lg">
         <span class="text-gray-400 text-xl px-3">🔍</span>
         <input
           type="text"
           placeholder="Search restaurants by name..."
-          class="w-full  text-black px-4 py-2 focus:outline-none"
+          class="w-full text-black px-4 py-2 focus:outline-none"
           [(ngModel)]="searchTerm"
           (input)="applyFilters()"
         />
-        <button
-          class="ml-2 bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 rounded"
-          (click)="toggleFilters()"
+      </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row md:items-end gap-4 mb-8 p-4">
+      <div class="flex flex-col w-full md:w-1/5">
+        <label class="text-gray-200 font-semibold mb-1">Min Rating</label>
+        <select
+          class="bg-gray-800 text-white rounded-lg px-3 py-2 border border-gray-700 focus:ring-2 focus:ring-amber-400 transition"
+          [(ngModel)]="filters.minRating"
+          (change)="applyFilters()"
         >
-          <span *ngIf="!showFilters">Filters ⚙️</span>
-          <span *ngIf="showFilters">Close ✖️</span>
-        </button>
+          <option [ngValue]="0">Any</option>
+          <option *ngFor="let star of [1,2,3,4,5]" [ngValue]="star">{{ star }} ★</option>
+        </select>
       </div>
-    </div>
-
-    <!-- Filtros -->
-    <div *ngIf="showFilters" class="mb-8 bg-gray-900 rounded-2xl p-8 shadow-2xl border border-gray-700">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-        <!-- Calificación -->
-        <div class="bg-gray-800 rounded-xl p-5 shadow-md border border-gray-700 flex flex-col items-start">
-          <div class="flex items-center mb-3">
-            <span class="text-amber-400 text-2xl mr-2">★</span>
-            <label class="text-gray-200 font-semibold text-lg">Minimum Rating</label>
-          </div>
-          <div class="flex items-center space-x-2">
-            <ng-container *ngFor="let star of [1,2,3,4,5]">
-              <button
-                type="button"
-                class="text-2xl transition-colors duration-200 rounded-full px-1 focus:ring-2 focus:ring-amber-400"
-                [class.text-amber-400]="filters.minRating >= star"
-                [class.text-gray-500]="filters.minRating < star"
-                (click)="updateRating(star)"
-                aria-label="Set minimum rating"
-              >★</button>
-            </ng-container>
-            <button
-              type="button"
-              class="ml-2 text-xs text-gray-400 underline hover:text-amber-400 transition"
-              (click)="updateRating(0)"
-              *ngIf="filters.minRating > 0"
-            >Clear</button>
-          </div>
-        </div>
-
-        <!-- Precio -->
-        <div class="bg-gray-800 rounded-xl p-5 shadow-md border border-gray-700 flex flex-col items-start">
-          <div class="flex items-center mb-3">
-            <span class="text-green-400 text-2xl mr-2">💲</span>
-            <label class="text-gray-200 font-semibold text-lg">Price Range</label>
-          </div>
-          <div class="flex items-center space-x-2">
-            <ng-container *ngFor="let price of [1,2,3,4]">
-              <label class="flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  [checked]="filters.priceRange.includes(price)"
-                  (change)="togglePriceFilter(price)"
-                  class="mr-1 accent-amber-500 rounded focus:ring-2 focus:ring-amber-400"
-                />
-                <span class="text-lg text-amber-400 font-bold">
-                  {{ '$'.repeat(price) }}
-                </span>
-              </label>
-            </ng-container>
-            <button
-              type="button"
-              class="ml-2 text-xs text-gray-400 underline hover:text-amber-400 transition"
-              (click)="resetPriceRange()"
-              *ngIf="filters.priceRange.length < 4"
-            >All</button>
-          </div>
-        </div>
-
-        <!-- Tipo de cocina -->
-        <div class="bg-gray-800 rounded-xl p-5 shadow-md border border-gray-700 flex flex-col items-start">
-          <div class="flex items-center mb-3">
-            <span class="text-pink-400 text-2xl mr-2">🍽️</span>
-            <label class="text-gray-200 font-semibold text-lg">Cuisine Type</label>
-          </div>
-          <div class="overflow-y-auto max-h-32 pr-2 w-full">
-            <ng-container *ngFor="let cuisine of cuisineTypes">
-              <label class="flex items-center cursor-pointer mb-1">
-                <input
-                  type="checkbox"
-                  [checked]="filters.selectedCuisines.includes(cuisine)"
-                  (change)="toggleCuisineFilter(cuisine)"
-                  class="mr-1 accent-amber-500 rounded focus:ring-2 focus:ring-amber-400"
-                />
-                <span class="text-gray-200">{{ cuisine }}</span>
-              </label>
-            </ng-container>
-          </div>
-        </div>
-
-        <!-- Distancia -->
-        <div class="bg-gray-800 rounded-xl p-5 shadow-md border border-gray-700 flex flex-col items-start">
-          <div class="flex items-center mb-3">
-            <span class="text-blue-400 text-2xl mr-2">📏</span>
-            <label class="text-gray-200 font-semibold text-lg">Max Distance (km)</label>
-          </div>
-          <div class="flex items-center space-x-2 w-full">
-            <input
-              type="range"
-              min="1"
-              max="50"
-              [value]="filters.maxDistance"
-              (input)="updateDistance($event)"
-              class="w-full accent-amber-500"
-            />
-            <span class="text-gray-200 w-12 text-right">{{ filters.maxDistance }} km</span>
-            <button
-              type="button"
-              class="ml-2 text-xs text-gray-400 underline hover:text-amber-400 transition"
-              (click)="resetMaxDistance()"
-              *ngIf="filters.maxDistance < 50"
-            >Reset</button>
-          </div>
-        </div>
+      <div class="flex flex-col w-full md:w-1/5">
+        <label class="text-gray-200 font-semibold mb-1">Price</label>
+        <select
+          class="bg-gray-800 text-white rounded-lg px-3 py-2 border border-gray-700 focus:ring-2 focus:ring-amber-400 transition"
+          [(ngModel)]="filters.priceRange"
+          (change)="applyFilters()"
+        >
+          <option [ngValue]="[]">Any</option>
+          <option [ngValue]="[1]">$</option>
+          <option [ngValue]="[2]">$$</option>
+          <option [ngValue]="[3]">$$$</option>
+          <option [ngValue]="[4]">$$$$</option>
+        </select>
       </div>
-
-      <!-- Ordenar -->
-      <div class="mt-8 flex flex-col md:flex-row md:items-center md:space-x-6">
-        <div>
-          <label class="block text-gray-300 font-semibold mb-2">Sort By</label>
-          <select
-            class="bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600 focus:ring-2 focus:ring-amber-400 transition"
-            [value]="filters.sortBy"
-            (change)="updateSort($event)"
-          >
-            <option *ngFor="let opt of sortOptions" [value]="opt.value">{{ opt.label }}</option>
-          </select>
-        </div>
-        <div class="mt-4 md:mt-0 flex space-x-2">
-          <button
-            class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-6 rounded-lg shadow transition"
-            (click)="applyFilters()"
-          >Apply Filters</button>
-          <button
-            class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-lg shadow transition"
-            (click)="resetFilters()"
-          >Clear All</button>
-        </div>
+      <div class="flex flex-col w-full md:w-1/5">
+        <label class="text-gray-200 font-semibold mb-1">Cuisine</label>
+        <select
+          class="bg-gray-800 text-white rounded-lg px-3 py-2 border border-gray-700 focus:ring-2 focus:ring-amber-400 transition"
+          [(ngModel)]="filters.selectedCuisines"
+          (change)="applyFilters()"
+        >
+          <option [ngValue]="[]">Any</option>
+          <option *ngFor="let cuisine of cuisineTypes" [ngValue]="[cuisine]">{{ cuisine }}</option>
+        </select>
       </div>
-    </div>
-
-    <!-- Resultados -->
-    <div
-      *ngIf="filteredRestaurants.length > 0"
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-black "
-    >
-      <div
-        *ngFor="let restaurant of filteredRestaurants"
-        class="bg-white rounded-lg overflow-hidden shadow-[-5px_10px_15px_1px_black] transition-transform duration-300 hover:transform hover:scale-105"
+      <div class="flex flex-col w-full md:w-1/5">
+        <label class="text-gray-200 font-semibold mb-1">Max Distance (km)</label>
+        <select
+          class="bg-gray-800 text-white rounded-lg px-3 py-2 border border-gray-700 focus:ring-2 focus:ring-amber-400 transition"
+          [(ngModel)]="filters.maxDistance"
+          (change)="applyFilters()"
+        >
+          <option [ngValue]="50">Any</option>
+          <option *ngFor="let d of [1,5,10,20,30,50]" [ngValue]="d">{{ d }} km</option>
+        </select>
+      </div>
+      <div class="flex flex-col w-full md:w-1/5">
+        <label class="text-gray-200 font-semibold mb-1">Sort By</label>
+        <select
+          class="bg-gray-800 text-white rounded-lg px-3 py-2 border border-gray-700 focus:ring-2 focus:ring-amber-400 transition"
+          [value]="filters.sortBy"
+          (change)="updateSort($event)"
+        >
+          <option *ngFor="let opt of sortOptions" [value]="opt.value">{{ opt.label }}</option>
+        </select>
+      </div>
+       <button
+        (click)="resetFilters()"
+        class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition-colors"
       >
-        <div class="h-64 overflow-hidden relative">
-          <img
-            [src]="restaurant.image"
-            [alt]="restaurant.name"
-            class="w-full h-full object-cover"
-          />
-          <div class="absolute top-0 right-0 p-2">
-            <button
-              class="bg-gray-900 bg-opacity-70 p-2 rounded-full text-amber-400 hover:text-amber-500 transition-colors"
-            >
-              <span class="text-xl">❤️</span>
-            </button>
-          </div>
-        </div>
-        <div class="p-4">
-          <h2 class="text-xl font-bold  mb-2">
-            {{ restaurant.name }}
-          </h2>
-          <p class="text-gray-700 mb-3 line-clamp-2">
-            {{ restaurant.description }}
-          </p>
-          <div class="flex items-center  mb-2">
-            <span class="mr-2">📍</span>
-            <span>{{ restaurant.address }}</span>
-          </div>
-          <div class="flex items-center mb-2">
-            <span class="text-amber-400 mr-2 text-lg">
-              <ng-container *ngFor="let s of [].constructor(restaurant.rating)">
-                ★
-              </ng-container>
-            </span>
-            <span class=" text-sm ml-1">({{ restaurant.rating }})</span>
-            <span class="ml-4 text-amber-400 text-lg">
-              {{ '$'.repeat(restaurant.priceRange || 1) }}
-            </span>
-            <span class="ml-4  text-sm">
-              {{ restaurant.cuisineType }}
-            </span>
-            <span class="ml-4 text-sm">
-              {{ restaurant.distance }} km
-            </span>
-          </div>
-          <button
-            class="w-full mt-4 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded transition-colors"
-          >
-            View Details
-          </button>
-        </div>
-      </div>
+        Reset Filters
+      </button>
     </div>
+
+      <app-card *ngIf="filteredRestaurants.length > 0" [cards]="filteredRestaurants"></app-card>    
 
     <div
       *ngIf="filteredRestaurants.length === 0"

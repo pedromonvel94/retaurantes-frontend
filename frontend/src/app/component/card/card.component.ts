@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 interface CardItem {
@@ -15,14 +15,16 @@ interface CardItem {
   styleUrls: ['./card.component.css'],
 })
 export class CardComponent implements OnInit {
-  cards: CardItem[] = [];
+  @Input() cards: CardItem[] = [];
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.http.get<CardItem[]>('http://localhost:3000/listar').subscribe((data) => {
-      this.cards = data;
-    });
+    if (this.cards.length === 0) {
+      this.http.get<CardItem[]>('http://localhost:3000/listar').subscribe((data) => {
+        this.cards = data;
+      });
+    }
   }
 }
 
