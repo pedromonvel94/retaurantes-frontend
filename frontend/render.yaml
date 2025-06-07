@@ -2,7 +2,7 @@ services:
   - type: web
     name: findmybite
     env: static
-    staticPublishPath: frontend/dist/retaurantes-frontend
+    staticPublishPath: dist/retaurantes-frontend
     routes:
       - type: rewrite
         path: /*
