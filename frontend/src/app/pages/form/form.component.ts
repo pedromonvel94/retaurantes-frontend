@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
+const API_URL = 'https://findmybite.onrender.com';
+
 @Component({
   selector: 'app-form',
   templateUrl: './form.component.html',
@@ -38,8 +40,7 @@ export class FormComponent implements OnInit {
 
       // Si estamos actualizando un registro, enviamos PUT. Si no, POST.
       if (this.currentId) {
-        this.http
-          .put(`http://localhost:3000/actualizar/${this.currentId}`, dataToSend) // 
+        this.http.put(`${API_URL}/actualizar/${this.currentId}`, dataToSend) // 
           .subscribe(
             (res) => {
               console.log('Registro actualizado con éxito:', res);
@@ -52,7 +53,7 @@ export class FormComponent implements OnInit {
             }
           );
       } else {
-        this.http.post('http://localhost:3000/guardar', dataToSend).subscribe( 
+        this.http.post(`${API_URL}/guardar`, dataToSend).subscribe( 
           (res) => {
             console.log('Formulario enviado con éxito:', res);
             this.formulario.reset();
@@ -70,7 +71,7 @@ export class FormComponent implements OnInit {
   }
 
   consultarDatos() {
-    this.http.get<any[]>('http://localhost:3000/listar').subscribe(
+    this.http.get<any[]>(`${API_URL}/listar`).subscribe(
       (res) => {
         this.datosGuardados = res;
         console.log('Datos recibidos:', res);
@@ -83,7 +84,7 @@ export class FormComponent implements OnInit {
 
 
   eliminarDato(id: number) {
-    this.http.delete(`http://localhost:3000/eliminar/${id}`).subscribe(
+    this.http.delete(`${API_URL}/eliminar/${id}`).subscribe(
       (res) => {
         console.log('Dato eliminado:', res);
         this.consultarDatos();
