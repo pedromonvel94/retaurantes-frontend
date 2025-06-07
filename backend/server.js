@@ -4,14 +4,18 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { db } from "./firebase/firebase.js";
 
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(cors({
+  origin: 'https://findmybite.onrender.com',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
+
 app.use(express.json());
 
 app.post("/guardar", async (req, res) => {
@@ -27,14 +31,13 @@ app.post("/guardar", async (req, res) => {
     };
 
     const docRef = await db.collection("restaurantes").add(newData);
-    res.send({ message: "Data saved in Firestore!", id: docRef.id });
+    console.log("Documento guardado con ID:", docRef.id);
+    res.status(201).send({ message: "Data saved in Firestore!", id: docRef.id });
   } catch (error) {
-    console.error("Error saving:", error);
+    console.error("Error saving data:", error);
     res.status(500).send("Error saving data.");
   }
 });
-
-
 
 app.get("/listar", async (req, res) => {
   try {
@@ -42,7 +45,7 @@ app.get("/listar", async (req, res) => {
     const datos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     res.json(datos);
   } catch (error) {
-    console.error("Error fetching:", error);
+    console.error("Error fetching data:", error);
     res.status(500).send("Error listing data.");
   }
 });
@@ -52,9 +55,10 @@ app.delete("/eliminar/:id", async (req, res) => {
 
   try {
     await db.collection("restaurantes").doc(id).delete();
+    console.log("Documento eliminado con ID:", id);
     res.send({ message: "Data deleted successfully." });
   } catch (error) {
-    console.error("Error deleting:", error);
+    console.error(`Error deleting data with ID ${id}:`, error);
     res.status(500).send("Error deleting data.");
   }
 });
@@ -75,23 +79,25 @@ app.put("/actualizar/:id", async (req, res) => {
 
   try {
     await db.collection("restaurantes").doc(id).update(updateData);
+    console.log("Documento actualizado con ID:", id);
     res.send({ message: "Data updated successfully." });
   } catch (error) {
-    console.error("Error updating:", error);
+    console.error(`Error updating data with ID ${id}:`, error);
     res.status(500).send("Error updating data.");
   }
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
 });
 
 app.get("/test-firebase", async (req, res) => {
   try {
     const doc = await db.collection("test").add({ connected: true, timestamp: new Date() });
+    console.log("Documento de prueba de Firebase creado:", doc.id);
     res.send(`Firebase is connected. Document ID: ${doc.id}`);
   } catch (error) {
     console.error("Firebase connection error:", error);
-    res.status(500).send("Failed to connect to Firebase");
+    res.status(500).send("Failed to connect to Firebase. Check backend logs for details.");
   }
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
