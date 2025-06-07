@@ -13,7 +13,7 @@ export class FormComponent implements OnInit {
   formulario: FormGroup;
 
   datosGuardados: any[] = [];
-  currentId: number | null = null;
+  currentId: string | null = null;
 
   constructor(private fb: FormBuilder, private http: HttpClient) {
     this.formulario = this.fb.group({
@@ -40,7 +40,7 @@ export class FormComponent implements OnInit {
 
       // Si estamos actualizando un registro, enviamos PUT. Si no, POST.
       if (this.currentId) {
-        this.http.put(`${API_URL}/actualizar/${this.currentId}`, dataToSend) // 
+        this.http.put(`${API_URL}/actualizar/${this.currentId}`, dataToSend) 
           .subscribe(
             (res) => {
               console.log('Registro actualizado con éxito:', res);
