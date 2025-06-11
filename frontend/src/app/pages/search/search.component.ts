@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
+const API_URL = 'https://findmybite-backend.onrender.com';
+
 interface Restaurant {
   id: number;
   name: string;
@@ -60,7 +62,7 @@ export class SearchComponent implements OnInit {
   }
 
   loadRestaurants(): void {
-    this.http.get<any[]>('http://localhost:3000/listar').subscribe(
+    this.http.get<any[]>(`${API_URL}/listar`).subscribe(
       (data) => {
         this.restaurants = data.map((restaurant, index) => ({
           id: restaurant.id || index + 1,

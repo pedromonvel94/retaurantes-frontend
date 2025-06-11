@@ -1,6 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
+const API_URL = 'https://findmybite-backend.onrender.com';
+
 interface CardItem {
   id: number;
   name: string;
@@ -21,7 +23,7 @@ export class CardComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.cards.length === 0) {
-      this.http.get<CardItem[]>('http://localhost:3000/listar').subscribe((data) => {
+      this.http.get<CardItem[]>(`${API_URL}/listar`).subscribe((data) => {
         this.cards = data;
       });
     }
