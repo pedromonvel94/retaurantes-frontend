@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
-const API_URL = 'https://findmybite.onrender.com';
+const API_URL = 'https://findmybite-backend.onrender.com';
 
 @Component({
   selector: 'app-form',
@@ -27,7 +27,6 @@ export class FormComponent implements OnInit {
   ngOnInit(): void {
     this.consultarDatos();
   }
-
 
   limpiarFormulario() {
     this.formulario.reset();
