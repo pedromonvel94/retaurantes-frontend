@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-const API_URL = 'https://findmybite-backend.onrender.com';
+const API_URL = 'https://restaurantes-backend-qzjr.onrender.com';
 
 interface CardItem {
   id: number;

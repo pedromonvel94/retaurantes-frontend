@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
-const API_URL = 'https://findmybite-backend.onrender.com';
+const API_URL = 'https://restaurantes-backend-qzjr.onrender.com';
 
 @Component({
   selector: 'app-form',
